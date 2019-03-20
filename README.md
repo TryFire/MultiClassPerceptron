@@ -15,3 +15,5 @@ word of a sentence is associated with a label describing its PoS. Each example c
 **Labels:** ['DET', 'NOUN', 'ADJ', 'VERB', 'VERB', 'ADV', 'ADJ', 'ADP', 'DET', 'NOUN', 'SCONJ', 'PRON', 'PRON', 'VERB', 'ADV', 'ADP', 'DET', 'NOUN', 'PUNCT']
 
 **The object** is to predict the PoS given one word and the context (the sentence having the word)
+
+## TODO:// Describe the notation of build the model(Perceptron)
