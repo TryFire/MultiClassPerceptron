@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{caption}
+\usepackage{graphicx, subfig}
+
+\def\N{{\mathcal{N}}}
+\def\NN{{\mathbb{N}}}
+\def\ZZ{{\mathbb{Z}}}
+\def\RR{{\mathbb{R}}}
+\def\un{{\rm{1\!\!1}}}
+\def\CC{{\mathcal{C}}}
+\def\HH{{\mathcal{H}}}
+\def\UU{{\mathcal{U}}}
+\def\II{{\mathcal{I}}}
+\def\JJ{{\mathcal{J}}}
+\def\TT{{\mathcal{T}}}
+\def\PP{{\mathcal{P}}}
+\def\SS{{\mathcal{S}}}
+\def\WW{{\mathcal{W}}}
+\def\KK{{\mathcal{K}}}
+\def\MM{{\mathcal{M}}}
+\def\YY{{\mathcal{Y}}}
+
+\newtheorem{mydef}{Definition}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{lemma}{Lemma}
+ \newtheorem{prop}{Proposition}
+ \newtheorem{conj}{Conjecture}
+
+
+\title{Report of Final project of ML, Out-of-Domain PoS tagging}
+\author{Xinneng XU et Wei HUANG}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The goal of this project is to design a PoS tagging which can well solve the problem of Out-of-Domain PoS tagging. And evaluate this PoS tagging on the different combination of train and test sets by considering: 1.its precision over the whole test set, 2.this precision over the ambiguous words, 3.its precision on Out-of-Vocabulary(OOV) words.For now, the PoS tagger we designed gives a 95.53\% accuracy on all the test dataset of corpus 'fr.ftb'. Finally, we implement and evaluate the different classifiers HMM Tagging which gives a 94.63\% accuracy.
+\end{abstract}
+
+\noindent{\textbf{Keywords}:
+Part-of-Speech; Out-of-Domain PoS tagging; Machine Learning; NLP; Classifier; HMM }
+
+\section{Introduction}
+In traditionnal grammar, a PoS is a category of words which have similar grammatical properties. PoS tagging can be considered as a multi-class classification problem, and with very simple features achieve human-comparable performance. However, the PoS tagger performance decrease with the increasing of the percentage of sentences that depart from training dataset. We aim to evaluate the impact of changes in domain and develop the features and models that are robust to changes in domain.
+
+In this report we describe a little about the different french corpus we used in our work in the aspects of the size of the different of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in thefollowing) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in (Charniak, Hendrickson... 1993). After that we describe the features we extracted from the corpus, such the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained of our experiments.
+
+
+\section{Experimental french corpus}
+In this section, we describe the similarity between the different datasets and the differences the train and test sets.
+
+There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus are given by the professor Guillaume, we find that perhaps they are come from the french \textsf{newspaper}  or \textsf{journal}.
+
+\subsection{Size of Corpus} 
+The table 1 shows the size (number of sentences and words) of the different of the train and test set. In which the number of sentences and words in corpus 'fr.ftb' is the largest, 14759 and 44228 respectively in train\_set. 
+
+\begin{table}[h]
+    \caption{The size of the different corpus}
+    \vspace{5pt}
+    \centering
+    
+\begin{tabular}{|l|rr|rr|}
+\hline
+\multicolumn{1}{|c|}{\ } & \multicolumn{2}{c|}{train\_set} & \multicolumn{2}{c|}{test\_set}\\ 
+\cline{2-5}
+Corpus & \#Sentences & \#Words & \#Sentences & \#Words\\
+\hline
+fr.ftb     & 14759 & 442228 & 2541 & 75073 \\
+fr.gsd     & 14450 & 345009 & 416  & 9742\\
+fr.partut  & 803   & 23324  & 110  & 2515\\
+fr.pud     & 803   & 23324  & 1000 & 24138\\
+fr.sequoia & 2231  & 49173  & 456  & 9740\\
+fr.spoken  & 1153  & 14952  & 726  & 10010\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Differences between UGC and Canonical corpus}
+In this subsection, we focus on the noisiness of a corpus (or the similarity between train and test set).  \textbf{Why?} We interested in the similarity because if we get a very good precision in the corpus which has large similarity between train and test set, this can not indicate that our model(or algorithm) is good. Thinking that if we use the train set as the test set, obviously we can get a good precision, but perhaps the model hasn't a good precision on test set which is very different from train set. In contrast, if the model execute well in test set which is different from train set, we can mostly get that the model is good enough. The noisiness of a corpus can be measured in the 3 following methods.
+
+$\bullet$ The percentage of Out-of-Vocabulary (OOV) words (words appearing in the test set that are not contained on the train set).
+\textsf{Why?} We interested in oov because in general, the word which is not in train set can not be learned, as a consequence, the model has less probability to predict the tag correctly. So normally the more oov exist, the less accuracy we get. In contrast, the less oov in the test set, the better accuracy we get, but we if the  In the section of Experimental results we will show the performance of the classifiers in the data set of oov.
+
+$\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets (Hector M, Djame S,\dots 2016). TODO: explain KL
+
+$\bullet$ Perplexity on the test set of a (word level) Language Model estimated on the test set. TODO: explain
+
+\begin{table}[h]
+    \caption{The result of 3 metrics}
+    \vspace{5pt}
+    \centering
+    
+\begin{tabular}{|l|rr|r|r|}
+\hline
+Corpus & \#OOV & P(OOV) & KL & Perplexity\\
+\hline
+fr.ftb     & 2529 & 21.06\% & TODO & TODO \\
+fr.gsd     & 576 & 17.84\% & TODO  & TODO\\
+fr.partut  & 293   & 27.73\%  & TODO  & TODO\\
+fr.pud     & \textbf{6540}   & \textbf{72.56\%}  & TODO & TODO\\
+fr.sequoia & 899  & 29.12\%  &  TODO & TODO\\
+fr.spoken  & 1783  & 60.51\%  & TODO  &TODO \\
+\hline
+\end{tabular}
+\end{table}
+
+$\bullet$ \textbf{Metric.} The table 2 show the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words has a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the lest similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a most similarity of the composition of words between train set and test set. $(iii)$ TODO
+
+
+
+\section{Perceptron}
+In this section we describe the principal of the Perceptron which is a multiple class classifier actually.
+
+\subsection{Features extraction}
+In this subsection we talk about the features extraction of a word with its context for the input for Perceptron. Note that for the feature name $fn$ and  the feature value corresponding $fnv_i$ of a word $w_i$, all feature values used by Perceptron will be defined by $fn + '\_' + fnv_i$ if $w_i$ has $fnv_i$, do nothing if not. As showed in figure \ref{figure1}, is all the feature values extracted by the following methods for the word 'aller'.
+
+\textbf{Window features.} The tag of a word usually has a relation with the word last and following. For example, the word 'de', if it follows by the word 'mecanismes' whose tag is 'NOUN', its tag will be 'ADP', but if it follow by the word 'imposer' whose tag is 'VERB', its tag will be 'DET'. The word following impact the tag analogously. In addition, the word two previous also has influence to this tag. However, if we choose to many words previous or following, this will occupy to much memory, as a result, in the experiment, for the word $w_i$ in the its context we use a window of size $l = 2$ around the word $w_i$ : $(w_i-l,\dots, w_i,\dots, w_i+l )$ to extract the window features for the word $w_i$.
+
+\textbf{Suffix features.} The suffixs of a word is useful because basic morphology rules are the same in different domains. In the experiment, we use the suffix in a length of $l = 3$ of a word $w_i$ : $(w_i[-l:],\dots,w_i[-1:])$. 
+
+\textbf{Shape featuers.} Each word is mapped to a bit string encompassing 10 binary indicators that correspond to different orthographic (e.g., does the word contains a digit, hyphen, capital character, starts with capital character, only has capital characters, has digit, is the word composed not only by alpha or digit) and morphological (e.g., does the word end in -ment or -tion) features. We note that the shape features we used are for the French and perhaps not really the same for English. 
+
+\textbf{Distributional features.} Firstly for the word $w_i$ we calculate $(i)$ its left neighbors with the counts of left neighbors, $(ii)$ its right neighbors with the counts of right neighbors. Then based on the these, TODO: WEI will write it.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=1]{feature_aller.PNG}
+\caption{all feature values for word 'aller'}
+\label{figure1}
+\end{figure}
+
+\subsection{notion of multiple class and Perceptron}
+$\bullet$ Each observation $x$ is associated to a label $y \in \YY$ where $\YY = $ finite of set of all possible labels in train set. 
+
+$\bullet$ Then we define the $0/1$ loss for the multi-class loss : 
+
+\begin{equation}
+\l^{multi}(y_1, y_2) = \left\{
+\begin{aligned}
+0 & & if\ y_1 == y_2\\
+1 & &otherwise
+\end{aligned}
+\right.
+\end{equation}
+
+$\bullet$ Decision function. The most common we do is one weight vector $w_y$ for each label $y$. By this we get the decision function :
+
+\begin{equation}
+y^* = argmax_{y \in \YY} (x*w_y)
+\end{equation}
+
+We multiply the observation $x$ with each weight vector $w_y$ of each label $y$, and then we choose the label $y$ which gives the largest product. However, if we use one-hot encoding for the features mentioned above, the feature matrix will be very sparse (too many 0 and little 1), this will take many memory and not easy to train the model.
+
+\textbf{For Perceptron : } So here we use the feature encoding mentioned in \textbf{3.1}. And each feature value gets its own weight vector with one weight for each possible label. As showed in figure \ref{figure2} is the weights for feature value 'win\_i-1pour', in which the feature name is 'win\_i-1' and the value for a word is 'pour'. In the figure, all possible labels associated with feature value 'win\_i-1pour' has a weight, there are the labels not in the dictionary has the weight value 0.
+
+%the photo of weights
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=1]{weight_pour.PNG}
+\caption{weights of feature 'win\_i-1pour'}
+\label{figure2}
+\end{figure}
+
+We suppose $W$ as the dictionary of weights for all feature values $FV$,  for word $w_i$, we can get all the feature values $FV_i$. For each feature value $fv \in FV_i$, we can get the weight vector $w_{fv} = W[fv]$, in which, for each label $y \in \YY$ associated with a weight $w_y = w_{fv} [y]$. The decision function will be:
+
+\begin{equation}
+y^* = argmax_{y \in \YY} \sum_{fv \in FV_i} {w_{fv}[y]}
+\end{equation}
+
+$\bullet$ Update rule. If $\l^{multi}(y^*, truth) = 0$ then we do nothing and if $\l^{multi}(y^*, truth) = 1$ then for each feature value $fv \in FV_i$ update the weights:
+
+\begin{equation}
+\forall fv \in FV_i,\  W[fv][y^*]\ -= 1;\ W[fv][truth]\ += 1
+\end{equation} 
+
+\section{HMM}
+Just as tomorrow's weather condition has a probability to be influenced by today's weather condition, the PoS tag of word also has a probability to be influenced by the PoS tag of last word. 
+In this project, the state-of-the-art statistical tagger is trained : Hidden Markov Model (HMM) tagger (Charniak, Hendrickson... 1993).
+\section{Experimental results}
+
+In this section we present the results  
+
+\begin{table}[h]
+    \caption{The size of the different corpus}
+    \vspace{5pt}
+    \centering
+    
+\begin{tabular}{|l|rrr|rrr|}
+\hline
+\multicolumn{1}{|c|}{\ } & \multicolumn{3}{c|}{Perceptron} & \multicolumn{3}{c|}{HMM}\\ 
+\cline{2-7}
+Corpus & ALL & Ambiguous & OOV & ALL & Ambiguous & OOV\\
+\hline
+fr.ftb     & \textbf{95.53\%} & 95.14\% & \textbf{82.87\%} & 95.53\% & 95.14\% & 82.87\% \\
+fr.gsd     & 94.85\% & \textbf{95.61}\% & 81.84\% & 95.53\% & 95.14\% & 82.87\% \\
+fr.partut  & 92.36\% & 89.66\% & 72.72\% & 95.53\% & 95.14\% & 82.87\% \\
+fr.pud     & 92.33\% & 88.94\% & 72.35\% & 95.53\% & 95.14\% & 82.87\% \\
+fr.sequoia & 92.61\% & 91.64\% & 75.19\% & 95.53\% & 95.14\% & 82.87\% \\
+fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 95.53\% & 95.14\% & 82.87\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\bibliographystyle{plain} 
+%\bibliographystyle{splncs} 
+\bibliography{biblioML.bib}
+
+
+\end{document}
