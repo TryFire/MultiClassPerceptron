@@ -2,6 +2,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{caption}
 \usepackage{graphicx, subfig}
+\usepackage{amssymb,enumitem}
 
 \def\N{{\mathcal{N}}}
 \def\NN{{\mathbb{N}}}
@@ -190,6 +191,7 @@ Y^* = \mathop{\arg\max}_{Y, y_i \in Y, w_i \in W} \prod_{i=1}^n P(w_i|y_i)*P(y_i
 In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the its possible associated label.$P(y_i|y_{i-1})$ shows that the current label type depends on which its last label was.
 
 \subsection{HMM tagger}
+In this project we use the HiddenMarkovModel in the Pomegranate library to build a hidden Markov model for the PoS tagging.
 
 \textbf{The state.} Suppose $\WW$ as the set of all possible word in the train set and $\YY$ as the set of all possible labels in train set. Each hidden state $y \in \YY$ gives the conditional probability $P(w|y)$ of observing a given word $w \in \WW$. The emission distribution for the word $w$ of the state $y$ is : $$P(w|y) = \frac{Count(y,w)}{Count(y)}$$ where $Count(y,w)$ is the number of pair of word $w$ and its label $y$, $Count(y)$ is the number of appearance of label $y$.
 
@@ -197,17 +199,12 @@ In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the it
 $$P(y|end) = \frac{Count(end, y)}{Count(end)}$$ where $Count(start, y)$ is the number of the label y being the start of a sentence and $Count(start)$ is the number of sentences, similar in the case of end.
 
 \textbf{The transition between two state.}The transition probability $P(y_i|y_{i-1})$ gives a the conditional probability of transition from label $y_{i-1}$ to $y_i$. From the train set we can learn the probabilities of all transitions from all state $y_i \in \YY$ to each state $y_j$ :
-$$P(y_j|y_i) = \frac{Count(y_i, y_j)}{Count(y_i)}$$ where $Count(y_i, y_j)$ is count of pair $y_i, y_j$.
+$$P(y_j|y_i) = \frac{Count(y_i, y_j)}{Count(y_i)}$$ where $Count(y_i, y_j)$ is count of pair $(y_i, y_j)$.
 
 
 
-
- 
-
-
-\section{Experimental results}
-
-In this section we present the results  
+\section{Evaluation}
+We trained the Perceptron classifier on the training set. A word in the test set is classified by  building the feature values using the same extraction of features as the train set. 
 
 \begin{table}[h]
 \caption{The results}
