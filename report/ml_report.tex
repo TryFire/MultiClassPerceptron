@@ -144,13 +144,13 @@ $\bullet$ Then we define the $0/1$ loss for the multi-class loss :
 \right.
 \end{equation}
 
-$\bullet$ Decision function. The most common we do is one weight vector $w_y$ for each label $y$. By this we get the decision function :
+$\bullet$ Decision function. The most common we do is one weight vector $u_y$ for each label $y$. By this we get the decision function :
 
 \begin{equation}
-y^* = argmax_{y \in \YY} (x*w_y)
+y^* = argmax_{y \in \YY} (x*u_y)
 \end{equation}
 
-We multiply the observation $x$ with each weight vector $w_y$ of each label $y$, and then we choose the label $y$ which gives the largest product. However, if we use one-hot encoding for the features mentioned above, the feature matrix will be very sparse (too many 0 and little 1), this will take many memory and not easy to train the model.
+We multiply the observation $x$ with each weight vector $u_y$ of each label $y$, and then we choose the label $y$ which gives the largest product. However, if we use one-hot encoding for the features mentioned above, the feature matrix will be very sparse (too many 0 and little 1), this will take many memory and not easy to train the model.
 
 \textbf{For Perceptron : } So here we use the feature encoding mentioned in \textbf{3.1}. And each feature value gets its own weight vector with one weight for each possible label. As showed in figure \ref{figure2} is the weights for feature value 'win\_i-1pour', in which the feature name is 'win\_i-1' and the value for a word is 'pour'. In the figure, all possible labels associated with feature value 'win\_i-1pour' has a weight, there are the labels not in the dictionary has the weight value 0.
 
@@ -162,29 +162,57 @@ We multiply the observation $x$ with each weight vector $w_y$ of each label $y$,
 \label{figure2}
 \end{figure}
 
-We suppose $W$ as the dictionary of weights for all feature values $FV$,  for word $w_i$, we can get all the feature values $FV_i$. For each feature value $fv \in FV_i$, we can get the weight vector $w_{fv} = W[fv]$, in which, for each label $y \in \YY$ associated with a weight $w_y = w_{fv} [y]$. The decision function will be:
+We suppose $U$ as the dictionary of weights for all feature values $FV$,  for word $w_i$, we can get all the feature values $FV_i$. For each feature value $fv \in FV_i$, we can get the weight vector $u_{fv} = U[fv]$, in which, for each label $y \in \YY$ associated with a weight $u_y = u_{fv} [y]$. The decision function will be:
 
 \begin{equation}
-y^* = argmax_{y \in \YY} \sum_{fv \in FV_i} {w_{fv}[y]}
+y^* = argmax_{y \in \YY} \sum_{fv \in FV_i} {u_{fv}[y]}
+= argmax_{y \in \YY} \sum_{fv \in FV_i} {U[fv][y]}
 \end{equation}
 
 $\bullet$ Update rule. If $\l^{multi}(y^*, truth) = 0$ then we do nothing and if $\l^{multi}(y^*, truth) = 1$ then for each feature value $fv \in FV_i$ update the weights:
 
 \begin{equation}
-\forall fv \in FV_i,\  W[fv][y^*]\ -= 1;\ W[fv][truth]\ += 1
+\forall fv \in FV_i,\  U[fv][y^*]\ -= 1;\ U[fv][truth]\ += 1
 \end{equation} 
 
 \section{HMM}
 Just as tomorrow's weather condition has a probability to be influenced by today's weather condition, the PoS tag of word also has a probability to be influenced by the PoS tag of last word. 
 In this project, the state-of-the-art statistical tagger is trained : Hidden Markov Model (HMM) tagger (Charniak, Hendrickson... 1993).
+
+\subsection{Notation}
+
+Giving a sentence of words $W = (w_i,\dots,w_i,\dots,w_n)$, we aim to find a chain of labels (tags) $Y = (y_1,\dots,y_i,\dots,y_n)$, with each $y_i$ associated with a word $w_i$, which can maximiser $P(Y|W)$ : $Y^* = \mathop{\arg\max}_{Y} P(Y|W)$. Thinks to Bayesian formula, $Y^* = \mathop{\arg\max}_{Y} P(W|Y)*P(Y)$. The HMM model will make predictions according to formula :
+
+\begin{equation}
+Y^* = \mathop{\arg\max}_{Y, y_i \in Y, w_i \in W} \prod_{i=1}^n P(w_i|y_i)*P(y_i|y_{i-1})
+\end{equation}
+
+In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the its possible associated label.$P(y_i|y_{i-1})$ shows that the current label type depends on which its last label was.
+
+\subsection{HMM tagger}
+
+\textbf{The state.} Suppose $\WW$ as the set of all possible word in the train set and $\YY$ as the set of all possible labels in train set. Each hidden state $y \in \YY$ gives the conditional probability $P(w|y)$ of observing a given word $w \in \WW$. The emission distribution for the word $w$ of the state $y$ is : $$P(w|y) = \frac{Count(y,w)}{Count(y)}$$ where $Count(y,w)$ is the number of pair of word $w$ and its label $y$, $Count(y)$ is the number of appearance of label $y$.
+
+\textbf{The start and end transition.} We also have to estimate the starting probability distribution (the probability of each label being the first label of a sentence) and the ending probability distribution (the probability of each label being the last label of a sentence) from the train set : $$P(y|start) = \frac{Count(start, y)}{Count(start)}$$ 
+$$P(y|end) = \frac{Count(end, y)}{Count(end)}$$ where $Count(start, y)$ is the number of the label y being the start of a sentence and $Count(start)$ is the number of sentences, similar in the case of end.
+
+\textbf{The transition between two state.}The transition probability $P(y_i|y_{i-1})$ gives a the conditional probability of transition from label $y_{i-1}$ to $y_i$. From the train set we can learn the probabilities of all transitions from all state $y_i \in \YY$ to each state $y_j$ :
+$$P(y_j|y_i) = \frac{Count(y_i, y_j)}{Count(y_i)}$$ where $Count(y_i, y_j)$ is count of pair $y_i, y_j$.
+
+
+
+
+ 
+
+
 \section{Experimental results}
 
 In this section we present the results  
 
 \begin{table}[h]
-    \caption{The size of the different corpus}
-    \vspace{5pt}
-    \centering
+\caption{The results}
+\vspace{5pt}
+\centering
     
 \begin{tabular}{|l|rrr|rrr|}
 \hline
@@ -192,12 +220,12 @@ In this section we present the results
 \cline{2-7}
 Corpus & ALL & Ambiguous & OOV & ALL & Ambiguous & OOV\\
 \hline
-fr.ftb     & \textbf{95.53\%} & 95.14\% & \textbf{82.87\%} & 95.53\% & 95.14\% & 82.87\% \\
-fr.gsd     & 94.85\% & \textbf{95.61}\% & 81.84\% & 95.53\% & 95.14\% & 82.87\% \\
-fr.partut  & 92.36\% & 89.66\% & 72.72\% & 95.53\% & 95.14\% & 82.87\% \\
-fr.pud     & 92.33\% & 88.94\% & 72.35\% & 95.53\% & 95.14\% & 82.87\% \\
-fr.sequoia & 92.61\% & 91.64\% & 75.19\% & 95.53\% & 95.14\% & 82.87\% \\
-fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 95.53\% & 95.14\% & 82.87\% \\
+fr.ftb     & \textbf{95.53\%} & 95.14\% & \textbf{82.87\%} & \textbf{94.60\%} & 92.93\% & 48.24\% \\
+fr.gsd     & 94.85\% & \textbf{95.61}\% & 81.84\% & 92.51\% & 93.82\% & 46.67\% \\
+fr.partut  & 92.36\% & 89.66\% & 72.72\% & 91.73\% & 91.90\% & 53.26\% \\
+fr.pud     & 92.33\% & 88.94\% & 72.35\% & 77.68\% & 91.90\% & 51.87\% \\
+fr.sequoia & 92.61\% & 91.64\% & 75.19\% & 93.73\% & \textbf{94.22\%} & \textbf{57.82\%} \\
+fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 86.54\% & 90.34\% & 51.10\% \\
 \hline
 \end{tabular}
 \end{table}
