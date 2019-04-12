@@ -176,6 +176,8 @@ $\bullet$ Update rule. If $\l^{multi}(y^*, truth) = 0$ then we do nothing and if
 \forall fv \in FV_i,\  U[fv][y^*]\ -= 1;\ U[fv][truth]\ += 1
 \end{equation} 
 
+$\bullet$ Training and Prediction. We use the same feature extraction in the train set of a corpus (not all corpus) and the same decision function as the training mentioned before. However, the difference between training and prediction is that in training we find the prediction is not correct, we use the update rule to update the weights for reduce the loss, but when we in prediction, we just return the prediction predicted by the model and do nothing about the update.
+
 \section{HMM}
 Just as tomorrow's weather condition has a probability to be influenced by today's weather condition, the PoS tag of word also has a probability to be influenced by the PoS tag of last word. 
 In this project, the state-of-the-art statistical tagger is trained : Hidden Markov Model (HMM) tagger (Charniak, Hendrickson... 1993).
@@ -201,10 +203,13 @@ $$P(y|end) = \frac{Count(end, y)}{Count(end)}$$ where $Count(start, y)$ is the n
 \textbf{The transition between two state.}The transition probability $P(y_i|y_{i-1})$ gives a the conditional probability of transition from label $y_{i-1}$ to $y_i$. From the train set we can learn the probabilities of all transitions from all state $y_i \in \YY$ to each state $y_j$ :
 $$P(y_j|y_i) = \frac{Count(y_i, y_j)}{Count(y_i)}$$ where $Count(y_i, y_j)$ is count of pair $(y_i, y_j)$.
 
+$\bullet$ Training and Prediction. We estimate all the terms $P(w|y)$, $P(y|start)$, $P(y|end)$, $P(y_j|y_i)$ based on a training corpus which is a set of couples $(W, Y)$ but not from all the corpus. We don't use any data in the test set. After all the terms estimated, we build the HiddenMarkovModel by adding all the states and transition mentioned before, and finally we use the model built to predict a sentence of labels for a sentence of input words.
+
 
 
 \section{Evaluation}
-We trained the Perceptron classifier on the training set. A word in the test set is classified by  building the feature values using the same extraction of features as the train set. 
+The experimental results of classifier Perceptron and HMM in the six corpus are presented in the Table 3 . The precision over the whole test set (i.e. the percentage of labels that have been correctly predicted) is presented in the column 'ALL'. The precision over the ambiguous words (i.e. the precision computed only on words that appear with more than one label in the train set) is presented in the column 'Ambiguous'. And the precision over OOV is presented in the column 'OOV'
+
 
 \begin{table}[h]
 \caption{The results}
@@ -220,12 +225,38 @@ Corpus & ALL & Ambiguous & OOV & ALL & Ambiguous & OOV\\
 fr.ftb     & \textbf{95.53\%} & 95.14\% & \textbf{82.87\%} & \textbf{94.60\%} & 92.93\% & 48.24\% \\
 fr.gsd     & 94.85\% & \textbf{95.61}\% & 81.84\% & 92.51\% & 93.82\% & 46.67\% \\
 fr.partut  & 92.36\% & 89.66\% & 72.72\% & 91.73\% & 91.90\% & 53.26\% \\
-fr.pud     & 92.33\% & 88.94\% & 72.35\% & 77.68\% & 91.90\% & 51.87\% \\
+fr.pud     & 84.43\% & 93.44\% & 67.60\% & 77.68\% & 91.90\% & 51.87\% \\
 fr.sequoia & 92.61\% & 91.64\% & 75.19\% & 93.73\% & \textbf{94.22\%} & \textbf{57.82\%} \\
 fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 86.54\% & 90.34\% & 51.10\% \\
 \hline
 \end{tabular}
 \end{table}
+
+
+\subsection{For Perceptron}
+We trained the Perceptron classifier on the training set. A word in the test set is classified by Perceptron by  building the feature values using the same extraction of features as the train set. 
+
+\begin{table}[h]
+\caption{Ambiguous words}
+\vspace{5pt}
+\centering
+\begin{tabular}{|c|r|r|r|r|r|r|}
+\hline
+\ & fr.ftb & fr.gsd & fr.partut & fr.pud & fr.sequoia & fr.spoken \\
+\hline
+Ambiguous words & 212787 & 151557 & 7243 & 7243 & 16096 & 4151 \\
+\hline
+Total train words & 442228 & 345009 & 23324 & 23324 & 49173 & 14952 \\
+\hline
+Ambi/Total & 48\% & 44\% & 31\% & 31\% & 33\% & 28\%\\  
+\hline
+\end{tabular}
+\end{table}
+
+
+$\bullet$ For ALL. From the results of precisions on ALL on all the corpus we can get the perceptron has a maximum precision 95.53\% on the corpus 'fr.ftb', and then 95.85\% on 'fr.gsd'. The precisions on the others are less accurate because the corpus 'fr.ftb' and 'fr.gsd' has much larger train data set than others and this gives much more training on the Perceptron.
+
+\subsection{For HMM}
 
 \bibliographystyle{plain} 
 %\bibliographystyle{splncs} 
