@@ -29,7 +29,7 @@
  \newtheorem{conj}{Conjecture}
 
 
-\title{Report of Final project of ML, Out-of-Domain PoS tagging}
+\title{Report of Final Project of ML, Out-of-Domain PoS tagging}
 \author{Xinneng XU et Wei HUANG}
 \begin{document}
 \maketitle
@@ -44,11 +44,11 @@ Part-of-Speech; Out-of-Domain PoS tagging; Machine Learning; NLP; Classifier; HM
 \section{Introduction}
 In traditional grammar, a PoS is a category of words which have similar grammatical properties. PoS tagging can be considered as a multi-class classification problem, and with very simple features achieve human-comparable performance. However, the PoS tagger performance decrease with the increasing of the percentage of sentences that depart from training dataset. We aim to evaluate the impact of changes in domain and develop the features and models that are robust to changes in domain.
 
-In this report we describe a little about the different french corpus we used in our work in the aspects of the size of the different of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in thefollowing) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in (Charniak, Hendrickson... 1993). After that we describe the features we extracted from the corpus, such the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained of our experiments.
+In this report we describe a little about the different french corpus we used in our work in the difference of the size of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in the following) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in (Charniak, Hendrickson... 1993). After that we describe the features we extracted from the corpus, such as the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained from our experiments.
 
 
-\section{Experimental french corpus}
-In this section, we describe the similarity between the different datasets and the differences the train and test sets.
+\section{Experimental French Corpus}
+In this section, we describe the similarity between different datasets and the differences of the train and test sets.
 
 There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus come from (Universal Dependencies 2.3). 
 
@@ -77,7 +77,7 @@ fr.spoken  & spoken \\
 
 
 \subsection{Size of Corpus} 
-The table 1 shows the size (number of sentences and words) of the different of the train and test set. In which the number of sentences and words in corpus 'fr.ftb' is the largest, 14759 and 44228 respectively in train\_set. 
+Table 1 shows the size (number of sentences and words) of the difference of the train and test set, in which the number of sentences and words in corpus 'fr.ftb' is the largest, 14759 and 44228 respectively in train\_set. 
 
 \begin{table}[h]
     \caption{The size of the different corpus}
@@ -103,10 +103,10 @@ fr.spoken  & 1153  & 14952  & 726  & 10010\\
 
 
 \subsection{Differences between UGC and Canonical corpus}
-In this subsection, we focus on the noisiness of a corpus (or the similarity between train and test set).  \textbf{Why?} We interested in the similarity because if we get a very good precision in the corpus which has large similarity between train and test set, this can not indicate that our model(or algorithm) is good. Thinking that if we use the train set as the test set, obviously we can get a good precision, but perhaps the model hasn't a good precision on test set which is very different from train set. In contrast, if the model execute well in test set which is different from train set, we can mostly get that the model is good enough. The noisiness of a corpus can be measured in the 3 following methods.
+In this subsection, we focus on the noisiness of a corpus (or the similarity between train and test set).  \textbf{Why?} We are interested in the similarity because if we get a very good precision in the corpus which has a large similarity between train and test set, this can not indicate that our model(or algorithm) is good. Imagining that if we use the train set as the test set, obviously we can get a good precision, but perhaps the model doesn't have a good precision on test set which is very different from train set. In contrast, if the model execute well in test set which is different from train set, we can mostly get that the model is good enough. The noisiness of a corpus can be measured in the 3 following methods.
 
 $\bullet$ The percentage of Out-of-Vocabulary (OOV) words (words appearing in the test set that are not contained on the train set).
-\textsf{Why?} We interested in oov because in general, the word which is not in train set can not be learned, as a consequence, the model has less probability to predict the tag correctly. So normally the more oov exist, the less accuracy we get. In contrast, the less oov in the test set, the better accuracy we get, but we if the  In the section of Experimental results we will show the performance of the classifiers in the data set of oov.
+\textsf{Why?} We are interested in oov because in general, the word which is not in train set can't be learned, as a consequence, the model has less probability to predict the tag correctly. So normally the more OOV exists, the less accuracy we get. In contrast, the less OOV is in the test set, the better accuracy we get. In the section of Experimental results we will show the performance of the classifiers in the data set of OOV.
 
 $\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets (Hector M, Djame S,\dots 2016). TODO: explain KL
 
@@ -132,23 +132,23 @@ fr.spoken  & 1783  & 60.51\%  & TODO  &TODO \\
 \label{table_matric}
 \end{table}
 
-$\bullet$ \textbf{Metric.} The table 2 show the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words has a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the lest similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a most similarity of the composition of words between train set and test set. $(iii)$ TODO
+$\bullet$ \textbf{Metric.} Table 2 shows the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words have a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the least similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a highest similarity of the composition of words between train set and test set. $(iii)$ TODO
 
 
 
 \section{Perceptron}
-In this section we describe the principal of the Perceptron which is a multiple class classifier actually.
+In this section we describe the principle of the Perceptron which is a multiple class classifier actually.
 
-\subsection{Features extraction}
-In this subsection we talk about the features extraction of a word with its context for the input for Perceptron. Note that for the feature name $fn$ and  the feature value corresponding $fnv_i$ of a word $w_i$, all feature values used by Perceptron will be defined by $fn + '\_' + fnv_i$ if $w_i$ has $fnv_i$, do nothing if not. As showed in figure \ref{figure1}, is all the feature values extracted by the following methods for the word 'aller'.
+\subsection{Feature Extraction}
+In this subsection we talk about the features extraction of a word with its context for the input for Perceptron. Note that for the feature name $fn$ and  the feature value corresponding $fnv_i$ of a word $w_i$, all feature values used by Perceptron will be defined by $fn + '\_' + fnv_i$ if $w_i$ has $fnv_i$, do nothing if not. Figure \ref{figure1} is all the feature values extracted by the following methods for the word 'aller'.
 
-\textbf{Window features.} The tag of a word usually has a relation with the word last and following. For example, the word 'de', if it follows by the word 'mecanismes' whose tag is 'NOUN', its tag will be 'ADP', but if it follow by the word 'imposer' whose tag is 'VERB', its tag will be 'DET'. The word following impact the tag analogously. In addition, the word two previous also has influence to this tag. However, if we choose to many words previous or following, this will occupy to much memory, as a result, in the experiment, for the word $w_i$ in the its context we use a window of size $l = 2$ around the word $w_i$ : $(w_i-l,\dots, w_i,\dots, w_i+l )$ to extract the window features for the word $w_i$.
+\textbf{Window features.} The tag of a word usually has a relation with the word last and following. For example, the word 'de', if it follows by the word 'mecanismes' whose tag is 'NOUN', its tag will be 'ADP', but if it is followed by the word 'imposer' whose tag is 'VERB', its tag will be 'DET'. The word following impacts the tag analogously. In addition, the previous two words also have influence to this tag. However, if we choose too many previous or following words, this will occupy to much memory, as a result, in the experiment, for the word $w_i$ in the its context we use a window of size $l = 2$ around the word $w_i$ : $(w_i-l,\dots, w_i,\dots, w_i+l )$ to extract the window features for the word $w_i$.
 
 \textbf{Suffix features.} The suffixs of a word is useful because basic morphology rules are the same in different domains. In the experiment, we use the suffix in a length of $l = 3$ of a word $w_i$ : $(w_i[-l:],\dots,w_i[-1:])$. 
 
-\textbf{Shape featuers.} Each word is mapped to a bit string encompassing 10 binary indicators that correspond to different orthographic (e.g., does the word contains a digit, hyphen, capital character, starts with capital character, only has capital characters, has digit, is the word composed not only by alpha or digit) and morphological (e.g., does the word end in -ment or -tion) features. We note that the shape features we used are for the French and perhaps not really the same for English. 
+\textbf{Shape features.} Each word is mapped to a bit string encompassing 10 binary indicators that correspond to different orthographic (e.g., does the word contains a digit, hyphen, capital character, starts with capital character, only has capital characters, has digit, is the word composed not only by alpha or digit) and morphological (e.g., does the word end in -ment or -tion) features. We note that the shape features we used are for the French and perhaps not really the same for English. 
 
-\textbf{Distributional features.} Firstly for the word $w_i$ we calculate $(i)$ its left neighbors with the counts of left neighbors, $(ii)$ its right neighbors with the counts of right neighbors. Then based on the these, TODO: WEI will write it.
+\textbf{Distributional features.} Firstly for the word $w_i$ we calculate $(i)$ its left neighbors with the number of left neighbors, $(ii)$ its right neighbors with the counts of right neighbors. Then based on the these, TODO: WEI will write it.
 
 \begin{figure}[ht]
 \centering
@@ -157,8 +157,8 @@ In this subsection we talk about the features extraction of a word with its cont
 \label{figure1}
 \end{figure}
 
-\subsection{notion of multiple class and Perceptron}
-$\bullet$ Each observation $x$ is associated to a label $y \in \YY$ where $\YY = $ finite of set of all possible labels in train set. 
+\subsection{Notion of Multiple Class and Perceptron}
+$\bullet$ Each observation $x$ is associated to a label $y \in \YY$ where $\YY = $ finite set of all possible labels in train set. 
 
 $\bullet$ Then we define the $0/1$ loss for the multi-class loss : 
 
@@ -171,15 +171,15 @@ $\bullet$ Then we define the $0/1$ loss for the multi-class loss :
 \right.
 \end{equation}
 
-$\bullet$ Decision function. The most common we do is one weight vector $u_y$ for each label $y$. By this we get the decision function :
+$\bullet$ Decision function. The most common we do is to use one weight vector $u_y$ for each label $y$. By this we get the decision function :
 
 \begin{equation}
 y^* = argmax_{y \in \YY} (x*u_y)
 \end{equation}
 
-We multiply the observation $x$ with each weight vector $u_y$ of each label $y$, and then we choose the label $y$ which gives the largest product. However, if we use one-hot encoding for the features mentioned above, the feature matrix will be very sparse (too many 0 and little 1), this will take many memory and not easy to train the model.
+We multiple the observation $x$ with each weight vector $u_y$ of each label $y$, and then we choose the label $y$ which gives the largest product. However, if we use one-hot encoding for the features mentioned above, the feature matrix will be very sparse (too many 0 and little 1), this will take many memories and it's not easy to train the model.
 
-\textbf{For Perceptron : } So here we use the feature encoding mentioned in \textbf{3.1}. And each feature value gets its own weight vector with one weight for each possible label. As showed in figure \ref{figure2} is the weights for feature value 'win\_i-1pour', in which the feature name is 'win\_i-1' and the value for a word is 'pour'. In the figure, all possible labels associated with feature value 'win\_i-1pour' has a weight, there are the labels not in the dictionary has the weight value 0.
+\textbf{For Perceptron : } So here we use the features encoded mentioned in \textbf{3.1}. And each feature value gets its own weight vector with one weight for each possible label. Figure \ref{figure2} is the weights for feature value 'win\_i-1pour', in which the feature name is 'win\_i-1' and the value for a word is 'pour'. In the figure, all possible labels associated with feature value 'win\_i-1pour' have a weight, some labels which are not in the dictionary have the weight value 0.
 
 %the photo of weights
 \begin{figure}[ht]
@@ -202,7 +202,7 @@ $\bullet$ Update rule. If $\l^{multi}(y^*, truth) = 0$ then we do nothing and if
 \forall fv \in FV_i,\  U[fv][y^*]\ -= 1;\ U[fv][truth]\ += 1
 \end{equation} 
 
-$\bullet$ Training and Prediction. We use the same feature extraction in the train set of a corpus (not all corpus) and the same decision function as the training mentioned before. However, the difference between training and prediction is that in training we find the prediction is not correct, we use the update rule to update the weights for reduce the loss, but when we in prediction, we just return the prediction predicted by the model and do nothing about the update.
+$\bullet$ Training and Testing. We use the same feature extraction in the train set of a corpus (not all corpus) and the same decision function as the training mentioned before. However, the difference between training and testing is that in training we find the prediction is not correct, then we use the updated rule to update the weights for reducing the loss, but when we are testing, we return the prediction predicted by the model and do nothing about the update.
 
 \section{HMM}
 Just as tomorrow's weather condition has a probability to be influenced by today's weather condition, the PoS tag of word also has a probability to be influenced by the PoS tag of last word. 
@@ -210,7 +210,7 @@ In this project, the state-of-the-art statistical tagger is trained : Hidden Mar
 
 \subsection{Notation}
 
-Giving a sentence of words $W = (w_i,\dots,w_i,\dots,w_n)$, we aim to find a chain of labels (tags) $Y = (y_1,\dots,y_i,\dots,y_n)$, with each $y_i$ associated with a word $w_i$, which can maximiser $P(Y|W)$ : $Y^* = \mathop{\arg\max}_{Y} P(Y|W)$. Thinks to Bayesian formula, $Y^* = \mathop{\arg\max}_{Y} P(W|Y)*P(Y)$. The HMM model will make predictions according to formula :
+Giving a sentence of words $W = (w_i,\dots,w_i,\dots,w_n)$, we aim to find a chain of labels (tags) $Y = (y_1,\dots,y_i,\dots,y_n)$, with each $y_i$ associated with a word $w_i$, which can maximiser $P(Y|W)$ : $Y^* = \mathop{\arg\max}_{Y} P(Y|W)$. According to Bayesian formula, $Y^* = \mathop{\arg\max}_{Y} P(W|Y)*P(Y)$. The HMM model will make predictions according to formula :
 
 \begin{equation}
 Y^* = \mathop{\arg\max}_{Y, y_i \in Y, w_i \in W} \prod_{i=1}^n P(w_i|y_i)*P(y_i|y_{i-1})
@@ -221,7 +221,7 @@ In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the it
 \subsection{HMM tagger}
 In this project we use the HiddenMarkovModel in the Pomegranate library to build a hidden Markov model for the PoS tagging.
 
-\textbf{The state.} Suppose $\WW$ as the set of all possible word in the train set and $\YY$ as the set of all possible labels in train set. Each hidden state $y \in \YY$ gives the conditional probability $P(w|y)$ of observing a given word $w \in \WW$. The emission distribution for the word $w$ of the state $y$ is : $$P(w|y) = \frac{Count(y,w)}{Count(y)}$$ where $Count(y,w)$ is the number of pair of word $w$ and its label $y$, $Count(y)$ is the number of appearance of label $y$.
+\textbf{The state.} Supposing $\WW$ as the set of all possible word in the train set and $\YY$ as the set of all possible labels in train set. Each hidden state $y \in \YY$ gives the conditional probability $P(w|y)$ of observing a given word $w \in \WW$. The emission distribution for the word $w$ of the state $y$ is : $$P(w|y) = \frac{Count(y,w)}{Count(y)}$$ where $Count(y,w)$ is the number of pair of word $w$ and its label $y$, $Count(y)$ is the number of appearance of label $y$.
 
 \textbf{The start and end transition.} We also have to estimate the starting probability distribution (the probability of each label being the first label of a sentence) and the ending probability distribution (the probability of each label being the last label of a sentence) from the train set : $$P(y|start) = \frac{Count(start, y)}{Count(start)}$$ 
 $$P(y|end) = \frac{Count(end, y)}{Count(end)}$$ where $Count(start, y)$ is the number of the label y being the start of a sentence and $Count(start)$ is the number of sentences, similar in the case of end.
@@ -234,7 +234,7 @@ $\bullet$ Training and Prediction. We estimate all the terms $P(w|y)$, $P(y|star
 
 
 \section{Evaluation}
-The experimental results of classifier Perceptron and HMM in the six corpus are presented in the Table 3 . The precision over the whole test set (i.e. the percentage of labels that have been correctly predicted) is presented in the column 'ALL'. The precision over the ambiguous words (i.e. the precision computed only on words that appear with more than one label in the train set) is presented in the column 'Ambiguous'. And the precision over OOV is presented in the column 'OOV'
+The experimental results of Classifier Perceptron and HMM in the six corpus are presented in the Table 3 . The precision over the whole test set (i.e. the percentage of labels that have been correctly predicted) is presented in the column 'ALL'. The precision over the ambiguous words (i.e. the precision computed only on words that appear with more than one label in the train set) is presented in the column 'Ambiguous'. And the precision over OOV is presented in the column 'OOV'
 
 
 \begin{table}[h]
@@ -264,7 +264,7 @@ fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 86.54\% & 90.34\% & 51.10\% \\
 We trained the Perceptron classifier on the training set. A word in the test set is classified by Perceptron by  building the feature values using the same extraction of features as the train set. 
 
 
-$\bullet$ For ALL. From the results of precisions on ALL on all the corpus (Table \ref{results}) we can get the perceptron has a maximum precision 95.53\% on the corpus 'fr.ftb', and then 95.85\% on 'fr.gsd'. The precisions on the others are less accurate because the corpus 'fr.ftb' and 'fr.gsd' has much larger train data set than others (Table \ref{test_on_train}) and this gives much more training on the Perceptron, the other reason is that the two corpus a less value of KL (Table \ref{table_matric}) which means their test set has larger similarity with the train set. For the corpus 'fr.pus', it hasn't few train data set, but more test data set than train data set (103\% on Table \ref{test_on_train}) and it has largest value of KL.
+$\bullet$ For ALL. From the results of precisions on ALL on all the corpus (Table \ref{results}) we can get that the perceptron has a maximum precision at 95.53\% on the corpus 'fr.ftb', and then 95.85\% on 'fr.gsd'. The precisions on the others are less accurate because the corpus 'fr.ftb' and 'fr.gsd' has much larger train data set than others (Table \ref{test_on_train}) and this gives much more training on the Perceptron, another reason is that the two corpus have a less value of KL (Table \ref{table_matric}) which means their test set has a larger similarity with the train set. For the corpus 'fr.pus', it doesn't have many train data set, but more test data set than train data set (103\% on Table \ref{test_on_train}) and it has largest value of KL.
 
 \begin{table}[h]
 \caption{test words}
@@ -285,7 +285,9 @@ Rest/Train & 17\% & 2\% & 11\% & 103\% & 20\% & 67\%\\
 \end{table}
 
 
-$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The perceptron hasn't the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) comparing to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). 
+$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this is because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The Perceptron doesn't have the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) compared to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). The reason is that 'fr.spoken' comes from spoken french, and the distribution feature works better on the corpus which has less normative expression.(TODO:: FIND THE ORIGIN ARTICLE describing this BY WEI). 
+
+$\bullet$ For Ambiguous.
 
 
 
