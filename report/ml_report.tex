@@ -42,7 +42,7 @@ The goal of this project is to design a PoS tagging which can well solve the pro
 Part-of-Speech; Out-of-Domain PoS tagging; Machine Learning; NLP; Classifier; HMM }
 
 \section{Introduction}
-In traditionnal grammar, a PoS is a category of words which have similar grammatical properties. PoS tagging can be considered as a multi-class classification problem, and with very simple features achieve human-comparable performance. However, the PoS tagger performance decrease with the increasing of the percentage of sentences that depart from training dataset. We aim to evaluate the impact of changes in domain and develop the features and models that are robust to changes in domain.
+In traditional grammar, a PoS is a category of words which have similar grammatical properties. PoS tagging can be considered as a multi-class classification problem, and with very simple features achieve human-comparable performance. However, the PoS tagger performance decrease with the increasing of the percentage of sentences that depart from training dataset. We aim to evaluate the impact of changes in domain and develop the features and models that are robust to changes in domain.
 
 In this report we describe a little about the different french corpus we used in our work in the aspects of the size of the different of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in thefollowing) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in (Charniak, Hendrickson... 1993). After that we describe the features we extracted from the corpus, such the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained of our experiments.
 
@@ -50,7 +50,31 @@ In this report we describe a little about the different french corpus we used in
 \section{Experimental french corpus}
 In this section, we describe the similarity between the different datasets and the differences the train and test sets.
 
-There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus are given by the professor Guillaume, we find that perhaps they are come from the french \textsf{newspaper}  or \textsf{journal}.
+There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus come from (Universal Dependencies 2.3). 
+
+\subsection{The resource}
+As marked briefly in Table \ref{table_resource}, $(1) fr.pud$  is a treebank of sentences from the newspaper Le Monde, initially manually annotated with morphological information and phrase-structure and then converted to the Universal Dependencies annotation scheme. $(2) fr.gsd$ contains many truncated sentences (date missing for instance). Almost every truncated sentence is from Wikipedia. $(3) fr.partut$ is a conversion of a multilingual parallel treebank developed at the University of Turin, and consisting of a variety of text genres, including talks, legal texts and Wikipedia articles, among others. $(4) pud$ is created for the [CoNLL 2017 shared task on Multilingual Parsing from Raw Text to Universal Dependencies](http://universaldependencies.org/conll17/). $(5) fr.sequoia$ is an automatic conversion of the Sequoia Treebank corpus [French Sequoia corpus](http://deep-sequoia.inria.fr). $(6) fr.spoken$ is a Universal Dependencies corpus for spoken French.
+
+\begin{table}[h]
+\caption{The resource of Corpus}
+\vspace{5pt}
+\centering
+    
+\begin{tabular}{|l|l|}
+\hline
+Corpus & Resource\\
+\hline
+fr.ftb     & news \\
+fr.gsd     & blog news reviews wiki\\
+fr.partut  & legal news wiki\\
+fr.pud     & news wiki\\
+fr.sequoia & medical news notification wiki\\
+fr.spoken  & spoken \\
+\hline
+\end{tabular}
+\label{table_resource}
+\end{table}
+
 
 \subsection{Size of Corpus} 
 The table 1 shows the size (number of sentences and words) of the different of the train and test set. In which the number of sentences and words in corpus 'fr.ftb' is the largest, 14759 and 44228 respectively in train\_set. 
@@ -74,6 +98,7 @@ fr.sequoia & 2231  & 49173  & 456  & 9740\\
 fr.spoken  & 1153  & 14952  & 726  & 10010\\
 \hline
 \end{tabular}
+\label{table_size}
 \end{table}
 
 
@@ -104,6 +129,7 @@ fr.sequoia & 899  & 29.12\%  &  TODO & TODO\\
 fr.spoken  & 1783  & 60.51\%  & TODO  &TODO \\
 \hline
 \end{tabular}
+\label{table_matric}
 \end{table}
 
 $\bullet$ \textbf{Metric.} The table 2 show the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words has a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the lest similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a most similarity of the composition of words between train set and test set. $(iii)$ TODO
@@ -230,11 +256,38 @@ fr.sequoia & 92.61\% & 91.64\% & 75.19\% & 93.73\% & \textbf{94.22\%} & \textbf{
 fr.spoken  & 89.23\% & 90.97\% & 78.57\% & 86.54\% & 90.34\% & 51.10\% \\
 \hline
 \end{tabular}
+\label{results}
 \end{table}
 
 
 \subsection{For Perceptron}
 We trained the Perceptron classifier on the training set. A word in the test set is classified by Perceptron by  building the feature values using the same extraction of features as the train set. 
+
+
+$\bullet$ For ALL. From the results of precisions on ALL on all the corpus (Table \ref{results}) we can get the perceptron has a maximum precision 95.53\% on the corpus 'fr.ftb', and then 95.85\% on 'fr.gsd'. The precisions on the others are less accurate because the corpus 'fr.ftb' and 'fr.gsd' has much larger train data set than others (Table \ref{test_on_train}) and this gives much more training on the Perceptron, the other reason is that the two corpus a less value of KL (Table \ref{table_matric}) which means their test set has larger similarity with the train set. For the corpus 'fr.pus', it hasn't few train data set, but more test data set than train data set (103\% on Table \ref{test_on_train}) and it has largest value of KL.
+
+\begin{table}[h]
+\caption{test words}
+\vspace{5pt}
+\centering
+\begin{tabular}{|c|r|r|r|r|r|r|}
+\hline
+\ & fr.ftb & fr.gsd & fr.partut & fr.pud & fr.sequoia & fr.spoken \\
+\hline
+Test words & 75073 & 9742 & 2515 & 24138 & 9740 & 10010 \\
+\hline
+Train words & 442228 & 345009 & 23324 & 23324 & 49173 & 14952 \\
+\hline
+Rest/Train & 17\% & 2\% & 11\% & 103\% & 20\% & 67\%\\  
+\hline
+\end{tabular}
+\label{test_on_train}
+\end{table}
+
+
+$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The perceptron hasn't the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) comparing to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). 
+
+
 
 \begin{table}[h]
 \caption{Ambiguous words}
@@ -253,14 +306,16 @@ Ambi/Total & 48\% & 44\% & 31\% & 31\% & 33\% & 28\%\\
 \end{tabular}
 \end{table}
 
-
-$\bullet$ For ALL. From the results of precisions on ALL on all the corpus we can get the perceptron has a maximum precision 95.53\% on the corpus 'fr.ftb', and then 95.85\% on 'fr.gsd'. The precisions on the others are less accurate because the corpus 'fr.ftb' and 'fr.gsd' has much larger train data set than others and this gives much more training on the Perceptron.
-
 \subsection{For HMM}
 
 \bibliographystyle{plain} 
 %\bibliographystyle{splncs} 
 \bibliography{biblioML.bib}
+
+Joakim Nivre et al. Universal Dependencies 2.3. LINDAT/CLARIN digital library at
+the Institute of Formal and Applied Linguistics (ÚFAL), Faculty of Mathematics and
+Physics, Charles University. Nov. 2018. url: http://hdl.handle.net/11234/1-
+2515.
 
 
 \end{document}
