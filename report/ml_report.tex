@@ -150,7 +150,7 @@ In this subsection we talk about the features extraction of a word with its cont
 
 \textbf{Shape features.} Each word is mapped to a bit string encompassing 10 binary indicators that correspond to different orthographic (e.g., does the word contains a digit, hyphen, capital character, starts with capital character, only has capital characters, has digit, is the word composed not only by alpha or digit) and morphological (e.g., does the word end in -ment or -tion) features. We note that the shape features we used are for the French and perhaps not really the same for English. 
 
-\textbf{Distributional features.} Firstly for the word $w_i$ we calculate $(i)$ its left neighbors with the number of left neighbors, $(ii)$ its right neighbors with the counts of right neighbors. Then based on the these, TODO: WEI will write it.
+\textbf{Distributional features.} Firstly for the word $w_i$ we calculate $(i)$ its left neighbors with the number of times each left neighbor appears, $(ii)$ its right neighbors with the number of times each right neighbor appears. Then based on the these, for word $w_i$  we create the feature values : $0-th\_freq\_left\_ +$ first frequently occurring word, $1-th\_freq\_left\_ +$the second frequently occurring word, $\dots$. Right beighbors are defined analogously.
 
 \begin{figure}[ht]
 \centering
