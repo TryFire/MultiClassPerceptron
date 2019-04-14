@@ -21,6 +21,7 @@
 \def\KK{{\mathcal{K}}}
 \def\MM{{\mathcal{M}}}
 \def\YY{{\mathcal{Y}}}
+\def\VV{{\mathcal{V}}}
 
 \newtheorem{mydef}{Definition}
 % \newtheorem{theorem}{Theorem}
@@ -108,31 +109,32 @@ In this subsection, we focus on the noisiness of a corpus (or the similarity bet
 $\bullet$ The percentage of Out-of-Vocabulary (OOV) words (words appearing in the test set that are not contained on the train set).
 \textsf{Why?} We are interested in oov because in general, the word which is not in train set can't be learned, as a consequence, the model has less probability to predict the tag correctly. So normally the more OOV exists, the less accuracy we get. In contrast, the less OOV is in the test set, the better accuracy we get. In the section of Experimental results we will show the performance of the classifiers in the data set of OOV.
 
-$\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets \cite{alonso2016noisy}. TODO: explain KL
+$\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets \cite{alonso2016noisy}. The divergence is defined as :
+$$KL(c_{test}||c_{train}) = \sum_{n \in \NN} p_{test}(n)*\log(\frac{p_{test(n)}}{p_{train}(n)})$$ 
+where the sum runs over $\NN$ the set of all the 3-gram of characters in the train and test sets, and $p_d(c_{i-2},c_{i-1},c_i) = \frac{\#\{c_{i-2},c_{i-1},c_{i}\} + 1}{\#\NN+\#\VV*(\#d-2)}$ is the probability to observe the 3-gram $c_{i-2}c_{c-1}c_{i}$ in data set $d$ with Laplace-smoothing; $\#\VV$ is the number of distinct 3-grams of characters in the train and in the test sets and $\#d$ is the number of characters in the corpus d.
 
-$\bullet$ Perplexity on the test set of a (word level) Language Model estimated on the test set. TODO: explain
 
 \begin{table}[h]
     \caption{The result of 3 metrics}
     \vspace{5pt}
     \centering
     
-\begin{tabular}{|l|rr|r|r|}
+\begin{tabular}{|l|rr|r|}
 \hline
-Corpus & \#OOV & P(OOV) & KL & Perplexity\\
+Corpus & \#OOV & P(OOV) & KL \\
 \hline
-fr.ftb     & 2529 & 21.06\% & 1.4e-05 & TODO \\
-fr.gsd     & 576 & 17.84\% & 1.4e-04  & TODO\\
-fr.partut  & 293   & 27.73\%  & 1.9e-03  & TODO\\
-fr.pud     & \textbf{6540}   & \textbf{72.56\%}  & 2.9e-05 & TODO\\
-fr.sequoia & 899  & 29.12\%  &  1.7e-04 & TODO\\
-fr.spoken  & 1783  & 60.51\%  & 1.5e-04  &TODO \\
+fr.ftb     & 2529 & 21.06\% & 1.4e-05 \\
+fr.gsd     & 576 & 17.84\% & 1.4e-04  \\
+fr.partut  & 293   & 27.73\%  & 1.9e-03  \\
+fr.pud     & \textbf{6540}   & \textbf{72.56\%}  & 2.9e-05\\
+fr.sequoia & 899  & 29.12\%  &  1.7e-04 \\
+fr.spoken  & 1783  & 60.51\%  & 1.5e-04  \\
 \hline
 \end{tabular}
 \label{table_matric}
 \end{table}
 
-$\bullet$ \textbf{Metric.} Table 2 shows the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words have a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the least similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a highest similarity of the composition of words between train set and test set. $(iii)$ TODO
+$\bullet$ \textbf{Metric.} Table 2 shows the different metric for the different combination of train and test sets. $(i)$ We can see that the corpus 'fr.pud', has the largest number of word which is in test set but not in train set. And the oov words have a large percentage in all test set. This means for the corpus 'fr.pud', it has the less similarity and similarly the corpus 'fr.spoken'. But for corpus 'fr.gsd', it has the most similarity. $(ii)$ in the column KL we can get that the corpus 'fr.partut' has the largest KL which means that it has the least similarity of the composition of words between train set and test set. Oppositely the corpus 'fr.ftb' has the smallest KL so it has a highest similarity of the composition of words between train set and test set.
 
 
 
@@ -286,7 +288,7 @@ Rest/Train & 17\% & 2\% & 11\% & 103\% & 20\% & 67\%\\
 \end{table}
 
 
-$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this is because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The Perceptron doesn't have the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) compared to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). The reason is that 'fr.spoken' comes from spoken french (Table \ref{table_resource}), and the distribution feature works better on the corpus which has less normative expression.(TODO:: FIND THE ORIGIN ARTICLE describing this BY WEI). 
+$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this is because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The Perceptron doesn't have the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) compared to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). The reason is that 'fr.spoken' comes from spoken french (Table \ref{table_resource}), and the distribution feature works better on the corpus which has less normative expression.. 
 
 $\bullet$ For Ambiguous Words. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, but the precision on other corpus is similar with them except 'fr.partut'. The reason is that 'fr.partut' is consisted of a variety of text genres, including talks, legal texts etc. As a consequence, its composition is too messy to get a good precision on Ambiguous words.
 
