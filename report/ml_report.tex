@@ -1,8 +1,8 @@
 \documentclass{article}
 \usepackage{amsmath,amssymb}
 \usepackage{caption}
-\usepackage{graphicx, subfig}
-\usepackage{amssymb,enumitem}
+\usepackage{graphicx}
+\usepackage{url}
 
 \def\N{{\mathcal{N}}}
 \def\NN{{\mathbb{N}}}
@@ -44,13 +44,13 @@ Part-of-Speech; Out-of-Domain PoS tagging; Machine Learning; NLP; Classifier; HM
 \section{Introduction}
 In traditional grammar, a PoS is a category of words which have similar grammatical properties. PoS tagging can be considered as a multi-class classification problem, and with very simple features achieve human-comparable performance. However, the PoS tagger performance decrease with the increasing of the percentage of sentences that depart from training dataset. We aim to evaluate the impact of changes in domain and develop the features and models that are robust to changes in domain.
 
-In this report we describe a little about the different french corpus we used in our work in the difference of the size of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in the following) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in (Charniak, Hendrickson... 1993). After that we describe the features we extracted from the corpus, such as the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained from our experiments.
+In this report we describe a little about the different french corpus we used in our work in the difference of the size of the train and test sets, the differences between UGC corpora (denoted as 'in-domain' in the following) and 'canonical' corpora (denoted as 'out-domain' in the following) etc. Then we describe the Perceptron, a part-of-speech (POS) tagger which uses the principal notion of Multi-Classification and the classical Hidden Markov Model (HMM) tagger which is described in \cite{charniak1993equations}. After that we describe the features we extracted from the corpus, such as the suffix of the token, the shape features. Finally we show the evaluations of the different classifiers and describe the results obtained from our experiments.
 
 
 \section{Experimental French Corpus}
 In this section, we describe the similarity between different datasets and the differences of the train and test sets.
 
-There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus come from (Universal Dependencies 2.3). 
+There are 6 different corpus in our sources : 1.fr.ftb, 2.fr.gsd, 3.fr.partut, 4.fr.pud, 5.fr.sequoia, 6.fr.spoken. These corpus come from $Universal Dependencies 2.3$ project \cite{nivre2017universal}. 
 
 \subsection{The resource}
 As marked briefly in Table \ref{table_resource}, $(1) fr.pud$  is a treebank of sentences from the newspaper Le Monde, initially manually annotated with morphological information and phrase-structure and then converted to the Universal Dependencies annotation scheme. $(2) fr.gsd$ contains many truncated sentences (date missing for instance). Almost every truncated sentence is from Wikipedia. $(3) fr.partut$ is a conversion of a multilingual parallel treebank developed at the University of Turin, and consisting of a variety of text genres, including talks, legal texts and Wikipedia articles, among others. $(4) pud$ is created for the [CoNLL 2017 shared task on Multilingual Parsing from Raw Text to Universal Dependencies](http://universaldependencies.org/conll17/). $(5) fr.sequoia$ is an automatic conversion of the Sequoia Treebank corpus [French Sequoia corpus](http://deep-sequoia.inria.fr). $(6) fr.spoken$ is a Universal Dependencies corpus for spoken French.
@@ -108,7 +108,7 @@ In this subsection, we focus on the noisiness of a corpus (or the similarity bet
 $\bullet$ The percentage of Out-of-Vocabulary (OOV) words (words appearing in the test set that are not contained on the train set).
 \textsf{Why?} We are interested in oov because in general, the word which is not in train set can't be learned, as a consequence, the model has less probability to predict the tag correctly. So normally the more OOV exists, the less accuracy we get. In contrast, the less OOV is in the test set, the better accuracy we get. In the section of Experimental results we will show the performance of the classifiers in the data set of OOV.
 
-$\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets (Hector M, Djame S,\dots 2016). TODO: explain KL
+$\bullet$ The KL divergence of 3-grams characters distributions estimated on the train and test sets \cite{alonso2016noisy}. TODO: explain KL
 
 $\bullet$ Perplexity on the test set of a (word level) Language Model estimated on the test set. TODO: explain
 
@@ -140,7 +140,7 @@ $\bullet$ \textbf{Metric.} Table 2 shows the different metric for the different 
 In this section we describe the principle of the Perceptron which is a multiple class classifier actually.
 
 \subsection{Feature Extraction}
-In this subsection we talk about the features extraction of a word with its context for the input for Perceptron. Note that for the feature name $fn$ and  the feature value corresponding $fnv_i$ of a word $w_i$, all feature values used by Perceptron will be defined by $fn + '\_' + fnv_i$ if $w_i$ has $fnv_i$, do nothing if not. Figure \ref{figure1} is all the feature values extracted by the following methods for the word 'aller'.
+In this subsection we talk about the features extraction of a word with its context for the input for Perceptron \cite{schnabel2014flors}. Note that for the feature name $fn$ and  the feature value corresponding $fnv_i$ of a word $w_i$, all feature values used by Perceptron will be defined by $fn + '\_' + fnv_i$ if $w_i$ has $fnv_i$, do nothing if not. Figure \ref{figure1} is all the feature values extracted by the following methods for the word 'aller'.
 
 \textbf{Window features.} The tag of a word usually has a relation with the word last and following. For example, the word 'de', if it follows by the word 'mecanismes' whose tag is 'NOUN', its tag will be 'ADP', but if it is followed by the word 'imposer' whose tag is 'VERB', its tag will be 'DET'. The word following impacts the tag analogously. In addition, the previous two words also have influence to this tag. However, if we choose too many previous or following words, this will occupy to much memory, as a result, in the experiment, for the word $w_i$ in the its context we use a window of size $l = 2$ around the word $w_i$ : $(w_i-l,\dots, w_i,\dots, w_i+l )$ to extract the window features for the word $w_i$.
 
@@ -152,7 +152,7 @@ In this subsection we talk about the features extraction of a word with its cont
 
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=1]{feature_aller.PNG}
+\includegraphics[scale=1]{featurealler.eps}
 \caption{all feature values for word 'aller'}
 \label{figure1}
 \end{figure}
@@ -184,7 +184,7 @@ We multiple the observation $x$ with each weight vector $u_y$ of each label $y$,
 %the photo of weights
 \begin{figure}[ht]
 \centering
-\includegraphics[scale=1]{weight_pour.PNG}
+\includegraphics[scale=1]{weightpour.eps}
 \caption{weights of feature 'win\_i-1pour'}
 \label{figure2}
 \end{figure}
@@ -206,7 +206,7 @@ $\bullet$ Training and Testing. We use the same feature extraction in the train 
 
 \section{HMM}
 Just as tomorrow's weather condition has a probability to be influenced by today's weather condition, the PoS tag of word also has a probability to be influenced by the PoS tag of last word. 
-In this project, the state-of-the-art statistical tagger is trained : Hidden Markov Model (HMM) tagger (Charniak, Hendrickson... 1993).
+In this project, the state-of-the-art statistical tagger is trained : Hidden Markov Model (HMM) tagger \cite{charniak1993equations}.
 
 \subsection{Notation}
 
@@ -214,12 +214,13 @@ Giving a sentence of words $W = (w_i,\dots,w_i,\dots,w_n)$, we aim to find a cha
 
 \begin{equation}
 Y^* = \mathop{\arg\max}_{Y, y_i \in Y, w_i \in W} \prod_{i=1}^n P(w_i|y_i)*P(y_i|y_{i-1})
+\label{hmm_formula}
 \end{equation}
 
-In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the its possible associated label.$P(y_i|y_{i-1})$ shows that the current label type depends on which its last label was.
+In the formula, $P(w_i|y_i)$ shows that the word $w_i$ present depends on the its possible associated label.$P(y_i|y_{i-1})$ shows that the current label type depends on which its last label was.\label{hmm notation}
 
 \subsection{HMM tagger}
-In this project we use the HiddenMarkovModel in the Pomegranate library to build a hidden Markov model for the PoS tagging.
+In this project we use the HiddenMarkovModel in the Pomegranate library to build a hidden Markov model for the PoS tagging. The steps for building HMM tagger as following:
 
 \textbf{The state.} Supposing $\WW$ as the set of all possible word in the train set and $\YY$ as the set of all possible labels in train set. Each hidden state $y \in \YY$ gives the conditional probability $P(w|y)$ of observing a given word $w \in \WW$. The emission distribution for the word $w$ of the state $y$ is : $$P(w|y) = \frac{Count(y,w)}{Count(y)}$$ where $Count(y,w)$ is the number of pair of word $w$ and its label $y$, $Count(y)$ is the number of appearance of label $y$.
 
@@ -285,9 +286,9 @@ Rest/Train & 17\% & 2\% & 11\% & 103\% & 20\% & 67\%\\
 \end{table}
 
 
-$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this is because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The Perceptron doesn't have the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) compared to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). The reason is that 'fr.spoken' comes from spoken french, and the distribution feature works better on the corpus which has less normative expression.(TODO:: FIND THE ORIGIN ARTICLE describing this BY WEI). 
+$\bullet$ For OOV. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, the reason is similar with previous precisions on ALL : much larger train data set. But for 'fr.pud', it has only 67.60\% on OOV, this is because the largest number of OOV words (6540, Table \ref{table_matric}) and largest percentage of OOV words on test set (72.56\%, Table  \ref{table_matric}). The Perceptron doesn't have the power to get good precision on large percentage unknown words test data set but small train data set size. However, for the corpus 'fr.spoken', it has larger precision (78.57\%) compared to 'fr.pud' although it has almost the same large percentage of OOV (60.51\%). The reason is that 'fr.spoken' comes from spoken french (Table \ref{table_resource}), and the distribution feature works better on the corpus which has less normative expression.(TODO:: FIND THE ORIGIN ARTICLE describing this BY WEI). 
 
-$\bullet$ For Ambiguous.
+$\bullet$ For Ambiguous Words. We get that the two corpus ('fr.frb \& fr.gsd') have the largest precision, but the precision on other corpus is similar with them except 'fr.partut'. The reason is that 'fr.partut' is consisted of a variety of text genres, including talks, legal texts etc. As a consequence, its composition is too messy to get a good precision on Ambiguous words.
 
 
 
@@ -308,16 +309,17 @@ Ambi/Total & 48\% & 44\% & 31\% & 31\% & 33\% & 28\%\\
 \end{tabular}
 \end{table}
 
-\subsection{For HMM}
+\subsection{For HMM}  
+
+$\bullet$ For ALL and Ambiguous. HMM tagger gets almost the same results as Perceptron (Table \ref{results}) except the precision on 'fr.spoken' over ALL, because for HMM tagger the current label type depends on which its last label was (\ref{hmm notation}), but the 'fr.spoken' has much normative expressions which make HMM tagger work worse on 'fr.spoken' than on the others. And there exist many errors for the verbs 'etre' and 'avoir' between tag auxiliary and verb.
+
+$\bullet$ For OOV. HMM tagger works much worse than Perceptron over OOV(Table \ref{results}). The reason is that according to Formula \ref{hmm_formula}, $P(w_i|y_i)$ is estimated by the train set, but one word of oov $\forall w_{oov} \in OOV$ doesn't exist in train set, so when we are in prediction, $P(w_{oov}|y_i)\ will\ be\ 0$ which results that $\prod_{i=1}^n P(w_i|y_i)*P(y_i|y_{i-1})$ will be 0, and the HMM will not work on OOV. However, in our experiment, we replaced the OOV words by 'nan', and then gave $ P(w_{nan}|y_i)$ a very small probability : $$\forall{y_i, w_{oov}}, y_i \in \YY, w_{oov}  \in OOV, P(w_{oov}|y_i) = P(w_{nan}|y_i) = p_{low}$$ where $w_{nan}$ is the word 'nan' and $p_{low} = a\ very\ small\ probability$. 
+
+\section{Conclusion}
+We have presented Perceptron and HMM tagger and all the work we have done.The resource of corpus, the noises of corpus can do influence to the results. In our experiment, Perceptron works better than HMM tagger, especially in OOV. However, HMM tagger has much more improvement can be done such as Treetagger\cite{schmid1994probabilistic}. The future work is to find more features for Perceptron and handle the problem of OOV. 
 
 \bibliographystyle{plain} 
 %\bibliographystyle{splncs} 
-\bibliography{biblioML.bib}
-
-Joakim Nivre et al. Universal Dependencies 2.3. LINDAT/CLARIN digital library at
-the Institute of Formal and Applied Linguistics (ÚFAL), Faculty of Mathematics and
-Physics, Charles University. Nov. 2018. url: http://hdl.handle.net/11234/1-
-2515.
-
+\bibliography{biblioML}
 
 \end{document}
